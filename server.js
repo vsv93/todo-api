@@ -35,6 +35,18 @@ app.post('/todos', function(req, res){
 	todos.push(body);	
 	res.json(body);
 });
+
+app.delete('/todos/:id', function(req,res){
+	var todoId = parseInt(req.params.id, 10);
+	var todoObject = _.findWhere(todos, {id: todoId});
+	if (!todoObject){
+		return res.status(400).send();
+	}
+	todos = _.without(todos, todoObject);
+	res.json(todoObject);
+})
+
+
 app.listen(PORT, function(){
 	console.log('Server started at port: '+PORT);
 })
