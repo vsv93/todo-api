@@ -36,14 +36,15 @@ app.get('/todos', function(req, res) {
 
 app.get('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var todoObject = _.findWhere(todos, {
-		id: todoId
+	db.todo.findById(todoId).then(function(todo){
+		if(!!todo){
+			res.json(todo.toJSON());
+		}else{
+			res.status(404).send('ID doesnt exist!');
+		}
+	}, function(e){
+		res.status(500).json(e);
 	});
-	if (todoObject) {
-		res.json(todoObject);
-	} else {
-		res.status(404).send('ID does not exist!!');
-	}
 });
 
 app.post('/todos', function(req, res) {
@@ -54,13 +55,6 @@ app.post('/todos', function(req, res) {
 	}, function(e){
 		res.status(400).json(e);
 	});
-	// if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length == 0) {
-	// 	return res.status(400).send();
-	// }
-	// body.description = body.description.trim();
-	// body.id = todoNextID++;
-	// todos.push(body);
-	// res.json(body);
 });
 
 app.put('/todos/:id', function(req, res) {
