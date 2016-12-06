@@ -13,6 +13,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/todos', function(req, res) {
+	console.log(process.env.DATABASE_URL)
 	var query = req.query;
 	var where = {};
 	if (query.hasOwnProperty('completed') && query.completed == 'true') {
