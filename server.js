@@ -13,7 +13,6 @@ app.get('/', function(req, res) {
 });
 
 app.get('/todos', function(req, res) {
-	console.log(process.env.DATABASE_URL)
 	var query = req.query;
 	var where = {};
 	if (query.hasOwnProperty('completed') && query.completed == 'true') {
@@ -85,14 +84,19 @@ app.put('/todos/:id', function(req, res) {
 
 app.delete('/todos/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var todoObject = _.findWhere(todos, {
-		id: todoId
-	});
-	if (!todoObject) {
-		return res.status(400).send();
-	}
-	todos = _.without(todos, todoObject);
-	res.json(todoObject);
+	db.todo.destroy({
+		where:{
+			id: todoId
+		}
+	}).then(function(rowsDeleted){
+		if(rowsDeleted == 0){
+			res.status(404).send('ID doesnt exist!');
+		}else{
+			res.status(204).send();
+		}
+	}, function(){
+		res.status(500).send();
+	})
 })
 
 db.sequelize.sync().then(function() {
