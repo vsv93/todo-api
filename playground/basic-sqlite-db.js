@@ -17,18 +17,53 @@ var Todo = sequelize.define('todo', {
 		defaultValue: false
 	}
 });
-sequelize.sync().then(function() {
+
+var User = sequelize.define('user', {
+	email: Sequelize.STRING
+});
+
+Todo.belongsTo(User);
+User.hasMany(Todo);
+
+sequelize.sync({
+	//force : true
+}).then(function() {
 	console.log('Everything synced!!');
-	Todo.findById(11).then(function(todo){
-		if(todo){
-			console.log(todo.toJSON());
-		}else{
-			console.log('Doesnt exist');
-		}
-		
-	}).catch(function(e){
-		console.log(e);
+
+	User.findById(1).then(function(user){
+		user.getTodos({
+			where: {
+				completed: false
+			}
+		}).then(function(todos){
+			todos.forEach(function(todo){
+				console.log(todo.toJSON());
+			})
+		})
 	})
+	// User.create({
+	// 	email: 'abc@xyz.com'
+	// }).then(function(){
+	// 	return Todo.create({
+	// 		description: 'Learn Node.js'
+	// 	});
+	// }).then(function(todo){
+	// 	User.findById(1).then(function(user){
+	// 		user.addTodo(todo);
+	// 	});
+	// });
+
+});
+	// Todo.findById(11).then(function(todo){
+	// 	if(todo){
+	// 		console.log(todo.toJSON());
+	// 	}else{
+	// 		console.log('Doesnt exist');
+	// 	}
+		
+	// }).catch(function(e){
+	// 	console.log(e);
+	// })
 
 	// Todo.create({
 	// 	description: 'Build todo app'
@@ -57,4 +92,3 @@ sequelize.sync().then(function() {
 	// }).catch(function(e) {
 	// 	console.log(e);
 	// });
-});
